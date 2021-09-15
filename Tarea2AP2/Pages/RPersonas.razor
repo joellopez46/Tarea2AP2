@@ -1,0 +1,165 @@
+﻿@page "/RPersona"
+@using Tarea2AP2.BLL;
+@using Tarea2AP2.Models;
+@inject PersonaBLL PersonaBLL ;
+
+<div class="container text-center">
+    <EditForm Model="Persona" OnValidSubmit="Guardar">
+        <DataAnnotationsValidator />
+
+        <head>
+            <h3>Registro de personas</h3>
+            <br />
+        </head>
+
+        <body>
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="PersonaId" class="col-4">Codigo de la Persona:</label>
+                    <InputNumber @bind-Value="Persona.PersonaId" class="form-control col-3" />
+                    <button type="button" class="btn btn-outline-dark" @onclick="Buscar" style="margin: 5px">Buscar</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="Nombre" class="col-4">Nombre:</label>
+                    <InputText @bind-Value="Persona.Nombre" class="form-control col-4" />
+                    <ValidationMessage For="@(() => Persona.Nombre)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="Telefono" class="col-4">Telefono:</label>
+                    <InputText @bind-Value="Persona.Telefono" class="form-control col-4" />
+                    <ValidationMessage For="@(() => Persona.Telefono)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="Cedula" class="col-4">Cedula:</label>
+                    <InputText @bind-Value="Persona.Cedula" class="form-control col-4" />
+                    <ValidationMessage For="@(() => Persona.Cedula)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="Direccion" class="col-4">Direccion:</label>
+                    <InputText @bind-Value="Persona.Direccion" class="form-control col-4" />
+                    <ValidationMessage For="@(() => Persona.Direccion)" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-inline">
+                    <label for="Fecha Nacimiento" class="col-4">Fecha Nacimiento:</label>
+                    <InputDate @bind-Value="Persona.FechaNacimiento" class="form-control col-4" />
+                    <ValidationMessage For="@(() => Persona.FechaNacimiento)" />
+                </div>
+            </div>
+
+            <h3>@Mensaje</h3>
+
+            <div>
+                <button type="button" class="btn btn-outline-primary" @onclick="Limpiar" style="margin: 5px">Limpiar</button>
+                <button type="submit" class="btn btn-outline-success" style="margin: 5px">Guardar</button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Eliminar" style="margin: 5px">Eliminar</button>
+            </div>
+
+        </body>
+
+        <h3 Mensaje > </h3>
+
+    </EditForm>
+</div>
+
+
+
+
+
+
+@code {
+
+    Personas Persona = new Personas();
+
+    [Inject]
+    private PersonaBLL personaBLL { get; set; }
+
+    string Mensaje = string.Empty;
+
+    Personas Personas = new Personas();
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+    }
+
+    public void Nuevo()
+    {
+        Limpiar();
+    }
+
+    public async void Guardar()
+    {
+
+        if (await personaBLL.Guardar(Personas))
+        {
+
+            Mensaje = ("Guardado");
+            Limpiar();
+
+        }
+        else
+        {
+            Mensaje = ("No se logró guardar el registro.");
+
+        }
+
+    }
+
+    public  async void Buscar()
+    {
+        var registro = await personaBLL.Buscar(Personas.PersonaId);
+
+        if (registro != null)
+        {
+            this.Personas = registro;
+
+        }
+        else
+        {
+           Mensaje = ("No se encontró el registro.");
+        }
+
+    }
+
+    public async void Eliminar()
+    {
+
+        if (await personaBLL.Eliminar(Personas.PersonaId))
+        {
+            Mensaje = ("Eliminado");
+            Limpiar();
+        }
+        else
+        {
+            Mensaje = ("No se logró eliminar el registro.");
+
+        }
+    }
+
+
+
+
+    private void Limpiar()
+    {
+
+        Persona = new Personas();
+        Mensaje = string.Empty;
+    }
+
+
+}
